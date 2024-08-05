@@ -1,2 +1,2 @@
-# uni-app-x-mobile-test
-uni-app-x构建移动跨端开发demo
+# aigc-flsak-server
+python框架flask构建AIGC应用服务
