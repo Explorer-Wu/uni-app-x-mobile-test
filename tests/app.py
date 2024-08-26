@@ -56,36 +56,8 @@ async def async_request():
 async def fetch(url):
     async with aiohttp.ClientSession() as session:
         # await表示阻塞挂起
-        async with await session.get(url) as respond:
+        async with await session.get(url) as response:
             return await response.text()
-
-@app.route("/asynctasks")
-async def asynctasks():
-    # 计时
-    start = time.time()
-    urls = [
-        "https://www.sina.com.cn/api/hotword.json",
-        "https://odin.sohu.com/odin/api/blockdata",
-        "https://photo.home.163.com/api/designer/pc/home/index/word"
-    ]
-    # 准备一个tasks数组
-    ntasks = []
-    # loop = asyncio.get_event_loop()
-    loop =  asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    # 对协程对象进行封装为task
-    for url in urls:
-        cop = fetch(url)
-        # 把task注册到时间循环中
-        task = loop.create_task(cop)
-        logging.info('asynctasks数据:', await task.result())
-        ntasks.append(task)
-
-    # loop.run_until_complete(asyncio.wait(ntasks))
-    # st = tasks.result()
-    # end = time.time() end-start, 
-    logging.info('总耗时:', ntasks)
-
 
 # methods: 指定请求方式
 @app.route('/process', methods=['POST'])
@@ -125,24 +97,6 @@ async def do_process_data(reqdata):
     await asyncio.sleep(1)
     logging.info('响应数据：', str(resdata))
     return resdata
-
-# 使用回调函数
-@app.route('/testtask')
-def testtask():
-    def callback(result):
-        logging.info('testtask数据：', result)
-        return result
-
-    async_task(callback)
-    return "Waiting for result..."
-
-def async_task(callback):
-    asyncio.ensure_future(async_task_impl(callback))
-
-async def async_task_impl(callback):
-    await asyncio.sleep(1)
-    result = "Hello, test World!"
-    callback(result)
 
 # def create_app():
 #    return app

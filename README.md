@@ -1,6 +1,6 @@
 # aigc-flsak-server
-python框架flask构建AIGC应用服务
 
+python框架flask构建AIGC应用服务
 
 ### pip/conda安装
 
@@ -38,38 +38,85 @@ conda安装
 给 Flask 安装异步视图支持
 `conda install asgiref`
 
+### 构建管理工具poetry，初始化&安装依赖包
+
+**安装poetry**
+`conda install conda-forge::poetry`
+
+激活指定虚拟环境后，初始化虚拟环境
+`poetry env use python`   # 使用当前环境的 Python
+`poetry shell`   # 进入虚拟环境
+`exit` 停用虚拟环境并退出此新 shell
+`conda deactivate` 停用虚拟环境而不离开 shell
+
+**初始化项目包文件pyproject.toml**
+`poetry init`
+添加主要依赖包：
+`poetry add <packName>`
+
+**接手安装项目依赖**
+`poetry install` 
+该命令的作用：
+1. 检查 pyproject.toml 文件中列出的依赖。
+2. 如果存在 poetry.lock 文件，Poetry 会根据该文件中锁定的版本来安装依赖。这确保了环境的一致性。
+3. 如果不存在 poetry.lock 文件，Poetry 会解析 pyproject.toml 中的依赖并生成一个新的 poetry.lock 文件。
+4. 安装所有必要的依赖到项目的虚拟环境中。如果项目的虚拟环境还未创建，Poetry 会先创建它。
+
+**环境变量**
+`poetry add python-dotenv`
+
+**定位错误**
+`poetry add dashscope`
+
+**pyproject.toml**
+pyproject.toml 是一个标准化的配置文件，定义了Python项目的构建系统和依赖管理。它由 PEP 518 提出，并被广泛接受和使用。这个文件可以包含以下几部分：
+
+1. 构建系统和工具：定义项目使用的构建工具，比如 setuptools 或 poetry。
+2. 项目元数据：包括项目的名称、版本、作者、许可证等。
+3. 依赖管理：列出项目的依赖项和开发依赖项。
+
+**poetry.toml**
+poetry.toml 是一个可选的配置文件，提供了一些额外的配置选项，专门用于配置 Poetry 工具。
+  其主要作用如下：
+
+  1. 缓存配置：配置 Poetry 的缓存路径。
+  2. 虚拟环境配置：配置虚拟环境的路径、名称等。
+  3. 其他本地开发配置：可以配置一些仅限本地开发环境的选项。
+
+### 代码规范检查工具 ruff & pre-commit-hooks
+
+**ruff 安装**
+`conda install ruff`
+
+**pre-commit安装**
+`conda install pre-commit`
+
+**pre-commit-hooks**
+`poetry run pre-commit run --all-files`
+
 ### 启动服务
 
 指定安装包在虚拟环境运行：
-`flask --app app run` 或  `FLASK_APP=app.py flask run`
+`flask --app aigcserver run` 或  `FLASK_APP=aigcserver.py flask run`
 
 未指定：
-`python3 ./app.py`
+`python3 ./aigcserver.py`
 
-### asyncio
+Local env：
+`poetry install`
+`FLASK_APP=aigcserver FLASK_ENV=development poetry run flask run`
 
-**协程**
-协程，可以看作单线程下多个任务同时进行。
-协程的实现方法其实就是迭代器的yield 操作，我们知道在迭代器中，遇到 yield 会中断返回，下次操作时会从这次中断的地方继续执行，在python3.3以后，又加入了yield from 关键字，它后面可以跟迭代器，这样你就可以从一个迭代器中断，进入另一个迭代器去运行，在 asyncio中，await 就相当于 yield from
+### 测试
 
-具体可以看附录第三个问题。
+**测试框架安装**
+`poetry add pytest --group test`
+**运行测试**
+`pytest`
 
-**基础的协程**
-以 async def 开始声明一个函数，执行这个函数返回的是一个 cocroutine 对象，函数并不会真的执行（就像执行一个生成器，返回的是一个生成器对象，而不是直接执行代码）
-await 会从 cocroutine 获取数据，它调用了这个协程（执行它）
-ensure_future/create_task 这两个函数会规划 cocroutine 对象，让它们在下次事件循环（event_loop) 的迭代中去执行（尽管不会去等待它们执行完毕，就像守护进程一样）
-创建事件循环，并添加协程对象（Corountine）来执行
-
-**事件循环 event_loop**
-事件循环，就相当于一个大池子，这个池子里可以随时添加 Task，它的作用就是调度运行这些 Tasks。它每次只运行一个 Task，一旦当前 Task 遇到 IO 等操作，事件循环会自动调度运行其他的 Task。
-
-有这么几个方法可以创建任务，将任务放到事件循环中：
-
-asyncio.ensure_future(coro_or_future, loop)：这个方法不常用（因为它是python较低版本中使用的方法，更高版本可以使用：asyncio.create_task()）， 它可以指定一个事件循环 loop，不指定的话会默认分配一个 loop。如果第一个参数是 coroutine，则会主动给它创建一个task（通过create_task()方法，这时事件已经存在 loop 中了，并返回 task；如果传参是一个future，则会判断 future 的 loop 和你传递的 loop 是不是同一个 loop，不是的话会报错，是的话直接返回；如果传递的是一个可等待对象，则会将此对象包装一下作为 coroutine ，然后再为它创建一个 task。
-
-asyncio.gather(*args) 会针对每个args，使用 ensure_future() 方法。它返回一个总的 *args的结果列表。
-
-asyncio.create_task(coro) ：（推荐使用）会直接创建一个 task 放到事件循环中，然后事件循环就会自动调度 Task，在某个task中遇到 IO 阻塞时，就会转去执行其他 task 。
+**测试覆盖率报告:**
+`coverage run -m pytest`
+`coverage report`
+`coverage html  # open htmlcov/index.html in a browser`
 
 ### Flask框架的主要特点
 

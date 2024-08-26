@@ -1,0 +1,69 @@
+[tool.poetry]
+name = "aigcserver"
+version = "0.0.1"
+description = "Python框架flask构建AIGC应用服务"
+authors = ["Explorer-Wu <3521764828@qq.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "aigcserver"}]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+flask = {extras = ["async"], version = "^3.0.3"}
+langchain = "^0.2.14"
+langchain-core = "^0.2.34"
+langchain-openai = "^0.1.22"
+langchain-community = "^0.2.12"
+langchain-ollama = "^0.1.1"
+langsmith = "^0.1.104"
+dashscope = "^1.20.4"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.6.1"
+pre-commit = "^3.8.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.2"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["error"]
+
+[tool.coverage.run]
+branch = true
+source = ["aigcserver", "tests"]
+
+[tool.ruff]
+src = ["src"]
+select = [ "ALL" ] 
+ignore = [] 
+fixable = [ "ALL" ] 
+unfixable = [] 
+exclude = [ 
+    ".git" , 
+    ".idea" , 
+    ".mypy_cache" , 
+    ".tox" , 
+    ".venv"
+ ] 
+target-version = "py312" 
+
+[tool.ruff.mccabe] 
+max-complexity = 10
+line-length = 88
+
+extend-ignore = [
+    "D105", # undocumented-magic-method
+    "D107", # undocumented-public-init
+    "D205", # blank-line-after-summary
+    "D415" # ends-in-punctuation
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
