@@ -94,6 +94,12 @@ def llm_generate_response(response) -> Response:
 
         def generate() -> Generator:
             yield from response
+            # for chunk in response:
+            #     if isinstance(chunk, str):  # 确保是字符串类型
+            #         yield f"data: {chunk}\n\n"  # SSE 格式
+            #     else:
+            #         # 处理其他可能的返回类型
+            #         yield "data: [Non-string output]\n\n"
 
         return Response(
             stream_with_context(generate()), status=200, mimetype="text/event-stream"

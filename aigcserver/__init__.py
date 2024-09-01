@@ -4,13 +4,15 @@
 
 import os
 import pathlib
+
 # import asyncio
 # import json
-
+import sys
 import logging
 
 from logging.config import fileConfig
 from flask import Flask
+from flask_cors import CORS
 
 from .core.routes import setup_routes
 # from tools.utils import load_config
@@ -19,6 +21,12 @@ from .core.routes import setup_routes
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+# logging.basicConfig(
+#     stream=sys.stdout,
+#     level=logging.INFO,
+#     format="%(asctime)s - %(levelname)s - %(message)s",
+# )
+
 
 # pathlib.Path(__file__).parent
 
@@ -70,6 +78,7 @@ def create_app(
         root_path=root_path,
     )
 
+    CORS(app)
     # 加载 log 配置文件
     # fileConfig(app_config["LOG_CONFIG_FILE"])
     # 从 config 中加载配置

@@ -151,9 +151,9 @@ async def dodata_llm_tongyi(reqdata, apikey):
         [HumanMessage(content=reqdata.get("messages")[0]["content"])],
         streaming=reqdata.get("stream"),
     )
-    chunks = []
-    async for chunk in response:
-        chunks.append(chunk)
-        print("chat resp:", str(chunks))
-    # logging.info("tongyi响应数据：", str(resdata))
-    return str(chunks)
+    # chunks = []
+    # async for chunk in response:
+    #     chunks.append(chunk)
+    #     print("chat resp:", type(chunk))
+    # logging.info("tongyi响应数据：", str(chunks))
+    return response  # str(chunks)

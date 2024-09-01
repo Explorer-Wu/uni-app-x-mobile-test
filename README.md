@@ -56,14 +56,23 @@ conda安装
 
 **接手安装项目依赖**
 `poetry install` 
+
 该命令的作用：
+
 1. 检查 pyproject.toml 文件中列出的依赖。
 2. 如果存在 poetry.lock 文件，Poetry 会根据该文件中锁定的版本来安装依赖。这确保了环境的一致性。
 3. 如果不存在 poetry.lock 文件，Poetry 会解析 pyproject.toml 中的依赖并生成一个新的 poetry.lock 文件。
 4. 安装所有必要的依赖到项目的虚拟环境中。如果项目的虚拟环境还未创建，Poetry 会先创建它。
 
-**环境变量**
-`poetry add python-dotenv`
+**管理环境变量**
+Flask的自动发现程序实例机制还有第三条规则：如果安装了python-dotenv，那么在使用flask run或其它命令时会使用它自动从.flaskenv文件和.env文件中加载环境变量。
+
+安装： `poetry add python-dotenv`
+当安装了python-dotenv时，Flask在加载环境变量的优先级是：手动设置的环境变量>.env中设置的环境变>.flaskenv设置的环境变量。
+
+  .flaskenv应用于公共变量，用来存储和Flask相关的公开环境变量，比如FLASK_APP；
+  而 .env 则用来存储包私有变量(含敏感信息的环境变量)，并且不提交到储存库，比如配置Email服务器的账户名与密码。
+  命令行设置的变量会重载 .env 中的变量， .env 中的变量会重载 .flaskenv 中的变量。
 
 **定位错误**
 `poetry add dashscope`
@@ -97,14 +106,16 @@ poetry.toml 是一个可选的配置文件，提供了一些额外的配置选�
 ### 启动服务
 
 指定安装包在虚拟环境运行：
-`flask --app aigcserver run` 或  `FLASK_APP=aigcserver.py flask run`
+`flask --app aigcserver run FLASK_ENV=development` 或  `FLASK_APP=aigcserver flask run FLASK_ENV=development`
 
 未指定：
-`python3 ./aigcserver.py`
+`python3 ./starter.py --dev=development`
+
+`python3 ./starter.py --dev=production`
 
 Local env：
 `poetry install`
-`FLASK_APP=aigcserver FLASK_ENV=development poetry run flask run`
+`FLASK_APP=starter FLASK_ENV=development poetry run flask run`
 
 ### 测试
 

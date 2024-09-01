@@ -1,6 +1,7 @@
 import asyncio
 from flask import request, jsonify, json, current_app, Response, stream_with_context
 import logging
+import os
 import datetime
 import time
 import threading
@@ -112,8 +113,8 @@ class RoutesHandler:
             raw_data = request.get_json()
             # 如果得到的data是字符串格式，则需要用json.loads来变换成python格式，看个人需求
             # data = json.loads(data)
-            llm_keys = current_app.config.get("llms")
-            logging.info("请求数据:", llm_keys)
+            # llm_keys = current_app.config.get("llms")
+            # logging.info("请求数据:", llm_keys)
             # 获取 POST 请求中的 JSON 数据
         except Exception as e:
             return jsonify({"error": "请求数据失败"}), 400
@@ -130,12 +131,16 @@ class RoutesHandler:
                         # llm_generate_response
                         res_data = await dodata_llm_openai(
                             raw_data,
-                            llm_keys["openai_apikey"],
+                            os.getenv("APP_OPENAI_API_KEY"),
+                            # llm_keys["openai_apikey"],
                         )
                     case "qwen-turbo" | "qwen-plus":
-                        res_data = await dodata_llm_tongyi(
-                            raw_data,
-                            llm_keys["alibaba_apikey"],
+                        res_data = llm_generate_response(
+                            dodata_llm_tongyi(
+                                raw_data,
+                                os.getenv("APP_ALIBABA_API_KEY"),
+                                # llm_keys["alibaba_apikey"],
+                            )
                         )
                         # Response(
                         #     stream_with_context(
