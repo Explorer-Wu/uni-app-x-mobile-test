@@ -18,7 +18,7 @@ langchain-ollama = "^0.1.1"
 langsmith = "^0.1.104"
 dashscope = "^1.20.4"
 python-dotenv = "^1.0.1"
-flask-cors = "^4.0.1"
+flask-cors = "^5.0.0"
 gevent = "^24.2.1"
 openai = {extras = ["datalib"], version = "^1.43.0"}
 pandas = "^2.2.2"
